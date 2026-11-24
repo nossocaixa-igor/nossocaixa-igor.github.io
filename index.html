@@ -158,7 +158,7 @@ nav.bar a.on{color:#fff}nav.bar a.on svg{background:linear-gradient(180deg,#2563
 @keyframes popc{from{transform:scale(.92);opacity:0}}
 .wrap{padding-bottom:calc(150px + env(safe-area-inset-bottom))!important}
 .fxops{display:flex;flex-direction:column;gap:8px;margin-top:10px;max-height:46vh;overflow:auto}.fxop{display:flex!important;justify-content:space-between;align-items:center;text-align:left;width:100%;gap:10px}.fxop span{display:flex;flex-direction:column}.fxop.sug{border-color:rgba(56,189,248,.6)!important;box-shadow:0 0 0 1px rgba(56,189,248,.35)}
-.fab{position:fixed;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%!important;padding:0!important;z-index:7;display:grid;place-items:center}.fab.hide{display:none}.orbf{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#e0f2fe,#38bdf8 40%,#1d4ed8 75%);box-shadow:0 0 18px #38bdf8;animation:pulso 2.4s ease-in-out infinite}
+.fab{position:fixed;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;width:58px;height:58px;border-radius:50%!important;padding:0!important;z-index:7;display:grid;place-items:center}.fab.hide{display:none}.fab.dormindo{opacity:.38;filter:grayscale(.85) saturate(.4);transform:scale(.92)}.fab.dormindo .orbf{animation:none;box-shadow:none}.fab.arrastando{opacity:1;transform:scale(1.08)}.orbf{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#e0f2fe,#38bdf8 40%,#1d4ed8 75%);box-shadow:0 0 18px #38bdf8;animation:pulso 2.4s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){.assist .orb{animation:none}.orbf,.iapop-in{animation:none}
 button,.btn{transition:none}}
 details.acc{padding:0}.comp-row{cursor:pointer;border-radius:12px;padding:10px 8px}.comp-row:hover{background:rgba(56,189,248,.07)}details.acc>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px;min-height:56px}details.acc>summary::-webkit-details-marker{display:none}details.acc>summary>span{display:flex;flex-direction:column;gap:2px}.acc-t{font:700 18px "Space Grotesk",Inter,sans-serif}details.acc>summary::after{content:"";flex:none;width:30px;height:30px;border-radius:10px;box-shadow:0 3px 0 #061331,0 0 12px -2px rgba(56,189,248,.5);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"),linear-gradient(180deg,#1d3f94,#0a1f52);background-size:14px,100% 100%;background-position:center;background-repeat:no-repeat;transition:transform .2s}details.acc[open]>summary::after{transform:rotate(180deg)}details.acc>:not(summary){margin-left:16px;margin-right:16px}details.acc[open]{padding-bottom:16px}
@@ -452,6 +452,21 @@ function perguntarFixa(lid,d,ym,ativas,sugeridas){const ord=ativas.slice().sort(
 async function excluirFixa(c){if(!await confirma(`Excluir a despesa fixa "${c.nome}"? Os pagamentos e comprovantes já lançados continuam no histórico.`))return;const cur=ymOf(hoje());const{id,venc:_v,paga:_p,...cd}=S.contas.find(x=>x.id===c.id)||c;try{await db.collection('contas').doc(c.id).set({...cd,excluida:true,excluidaEm:Date.now(),fim:(cd.pagas||{})[cur]?cur:addM(cur,-1)});const k=cd.chave||norm(cd.nome);if(k){const ig=[...new Set([...(S.config.ignoradas||[]),k])];await db.doc('app/config').set({...S.config,ignoradas:ig})}closeSheet();toast('Despesa fixa excluída. O histórico foi mantido.')}catch(e){toast(errMsg(e))}}
 
 window.vincularFixa=vincularFixa;
+function arrastarFab(){const f=$('#fabIA');let pos=null;try{pos=JSON.parse(localStorage.getItem('nc_fab')||'null')}catch(e){}
+  const W=()=>innerWidth,H=()=>innerHeight,sz=58,m=10,topMin=70,botMax=()=>H()-sz-84;
+  const clamp=(x,y)=>({x:Math.min(Math.max(m,x),W()-sz-m),y:Math.min(Math.max(topMin,y),botMax())});
+  const aplica=(p,anim)=>{f.style.transition=anim?'left .28s cubic-bezier(.2,.8,.2,1),top .28s cubic-bezier(.2,.8,.2,1),opacity .4s':'opacity .4s';f.style.left=p.x+'px';f.style.top=p.y+'px';f.style.right='auto';f.style.bottom='auto'};
+  const encosta=p=>{p=clamp(p.x,p.y);p.x=p.x+sz/2<W()/2?m:W()-sz-m;return p};
+  let t;const acorda=()=>{f.classList.remove('dormindo');clearTimeout(t);t=setTimeout(()=>f.classList.add('dormindo'),3000)};
+  pos=encosta(pos||{x:W()-sz-m,y:botMax()-10});aplica(pos);acorda();
+  let ini=null,moveu=false;
+  f.addEventListener('pointerdown',e=>{ini={px:e.clientX,py:e.clientY,x:pos.x,y:pos.y};moveu=false;acorda();try{f.setPointerCapture(e.pointerId)}catch(_){}});
+  f.addEventListener('pointermove',e=>{if(!ini)return;const dx=e.clientX-ini.px,dy=e.clientY-ini.py;if(!moveu&&Math.hypot(dx,dy)<6)return;moveu=true;f.classList.add('arrastando');pos=clamp(ini.x+dx,ini.y+dy);aplica(pos);e.preventDefault()});
+  const solta=()=>{if(!ini)return;ini=null;f.classList.remove('arrastando');if(moveu){pos=encosta(pos);aplica(pos,true);try{localStorage.setItem('nc_fab',JSON.stringify(pos))}catch(_){}}acorda()};
+  f.addEventListener('pointerup',solta);f.addEventListener('pointercancel',solta);
+  f.addEventListener('click',e=>{if(moveu){e.preventDefault();moveu=false;return}abrirChat()});
+  addEventListener('resize',()=>{pos=encosta(pos);aplica(pos)});addEventListener('scroll',acorda,{passive:true})}
+
 /* ---------- financiamentos e empréstimos ---------- */
 function acharDivida(tipo,credor,id){if(id){const x=S.dividas.find(d=>d.id===id);if(x)return x}const k=norm(credor||'');return S.dividas.find(d=>d.tipo===tipo&&!d.quitada&&(!k||!d.credor||norm(d.credor)===k))||null}
 async function registrarDivida(tipo,l,sugId){const ex=acharDivida(tipo,l.credor,sugId);const id=ex?ex.id:uidNew();const tot=l.totalParcelas||(ex&&ex.totalParcelas)||null;const pa=Math.max(l.parcelaAtual||0,(ex&&ex.parcelasPagas)||0)||((ex&&ex.parcelasPagas||0)+1);const vp=num(l.valor);const saldo=l.saldoDevedor||(tot?Math.max(0,(tot-pa)*vp):null);const dia=+String(l.data).slice(8,10)||1;const quitada=!!(tot&&pa>=tot);
@@ -700,7 +715,7 @@ function boot(){
   if(!window.supabase||!CFG.url){gateHTML('<p>App ainda não configurado.</p>');return}
   sb=window.supabase.createClient(CFG.url,CFG.anon,{auth:{persistSession:true,autoRefreshToken:true}});
   db=dbShim;sample=sampleShim;assets=assetsShim;
-  $('#askF').onsubmit=e=>{e.preventDefault();const v=$('#askQ').value.trim();if(!v){abrirChat();return}$('#askQ').value='';abrirChat(v)};ligarMic($('#askMic'),$('#askQ'),()=>$('#askF').requestSubmit());$('#fabIA').onclick=()=>abrirChat();
+  $('#askF').onsubmit=e=>{e.preventDefault();const v=$('#askQ').value.trim();if(!v){abrirChat();return}$('#askQ').value='';abrirChat(v)};ligarMic($('#askMic'),$('#askQ'),()=>$('#askF').requestSubmit());arrastarFab();
   sb.auth.onAuthStateChange(ev=>{if(ev==='SIGNED_OUT'&&started)location.reload()});
   porta().catch(e=>gateHTML('<p class="red">'+esc(errMsg(e))+'</p>'))}
 try{if(localStorage.getItem('nc_lv')==='comp')setLancView('comp')}catch{}
