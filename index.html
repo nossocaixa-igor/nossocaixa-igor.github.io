@@ -218,8 +218,8 @@ nav.bar a.on{color:#fff}nav.bar a.on svg{background:linear-gradient(180deg,#2563
 .hero-msg{margin-top:6px;font-size:14px;line-height:1.4;opacity:.95}
 @keyframes heroPulso{50%{box-shadow:inset 0 0 0 2px rgba(248,113,113,.55),0 0 30px -6px rgba(239,68,68,.6)}}
 .vinheta{position:fixed;inset:0;pointer-events:none;z-index:6;opacity:0;transition:opacity .6s;box-shadow:inset 0 0 120px 30px rgba(220,38,38,.38)}
-body.modo-alerta .vinheta{opacity:1;animation:vinPulso 3s ease-in-out infinite}
-body.al-aberto .vinheta{opacity:1;box-shadow:inset 0 0 180px 70px rgba(220,38,38,.65)}
+body.al-aberto .vinheta{opacity:1;transition:opacity .4s;box-shadow:inset 0 0 180px 70px rgba(220,38,38,.65)}
+body.vin-sai .vinheta{opacity:0;transition:opacity 4.5s ease-out;box-shadow:inset 0 0 180px 70px rgba(220,38,38,.65)}
 @keyframes vinPulso{50%{opacity:.55}}
 .alpop{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;padding:40px 16px 16px;background:radial-gradient(circle at 50% 45%,rgba(69,10,10,.75),rgba(10,2,2,.92));backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}.alpop.on{display:flex}
 .alpop-in{position:relative;width:min(440px,100%);max-height:calc(100vh - 60px);overflow:auto;text-align:center;border-radius:22px;padding:14px 18px 18px;background:linear-gradient(180deg,#2a0808,#120303);border:1px solid rgba(248,113,113,.7);box-shadow:0 0 60px -10px rgba(239,68,68,.8);animation:alEntra .45s cubic-bezier(.2,.9,.3,1.3)}
@@ -231,7 +231,7 @@ body.al-aberto .vinheta{opacity:1;box-shadow:inset 0 0 180px 70px rgba(220,38,38
 .al-t{margin:4px 0 2px;color:#fecaca;font-size:24px;text-transform:uppercase;letter-spacing:1px}.al-v{font:700 28px/1.2 'Space Grotesk',Inter;color:#fff;margin-bottom:10px}
 .al-c{text-align:left;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(248,113,113,.35);font-size:15px;line-height:1.45}.al-c ul{margin:6px 0 0;padding-left:18px}.al-c li{margin:5px 0}
 .al-ok{margin-top:14px;width:100%;background:linear-gradient(180deg,#dc2626,#991b1b)!important;border-color:#f87171!important}
-@media(prefers-reduced-motion:reduce){.al-tri,.al-onda,body.modo-alerta .vinheta,.hero.hero-neg .field{animation:none!important}}
+@media(prefers-reduced-motion:reduce){.al-tri,.al-onda,.hero.hero-neg .field{animation:none!important}}
 .fab{position:fixed;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;width:58px;height:58px;border-radius:50%!important;padding:0!important;z-index:7;display:grid;place-items:center}.fab.hide{display:none}.fab.dormindo{opacity:.38;filter:grayscale(.85) saturate(.4);transform:scale(.92)}.fab.dormindo .orbf{animation:none;box-shadow:none}.fab.arrastando{opacity:1;transform:scale(1.08)}.orbf{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#e0f2fe,#38bdf8 40%,#1d4ed8 75%);box-shadow:0 0 18px #38bdf8;animation:pulso 2.4s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){.assist .orb{animation:none}.orbf,.iapop-in{animation:none}
 button,.btn{transition:none}}
@@ -585,10 +585,10 @@ function alertaVermelho(r,forcar){const k='nc_alneg',hj=hoje(),fx=Math.round(-r.
   try{localStorage.setItem(k,JSON.stringify({d:hj,v:fx}))}catch(e){}
   const p=$('#alPop');$('#alPopB').innerHTML=`<div class="al-ico"><svg viewBox="0 0 120 110" width="120" height="110" aria-hidden="true"><defs><linearGradient id="alG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fca5a5"/><stop offset="1" stop-color="#dc2626"/></linearGradient></defs><circle class="al-onda" cx="60" cy="62" r="40" fill="none" stroke="#ef4444" stroke-width="2"/><circle class="al-onda o2" cx="60" cy="62" r="40" fill="none" stroke="#ef4444" stroke-width="2"/><g class="al-tri"><path d="M60 14L106 96H14z" fill="url(#alG)" stroke="#fee2e2" stroke-width="3" stroke-linejoin="round"/><rect x="55" y="40" width="10" height="32" rx="5" fill="#450a0a"/><circle cx="60" cy="83" r="5.5" fill="#450a0a"/></g></svg></div>
   <h2 class="al-t">Gastos proibidos</h2><div class="al-v">Faltam ${brl(-r.livre)}</div><div class="al-c"><b>Conselho da IA</b><ul>${conselhoNeg(r).map(x=>`<li>${x}</li>`).join('')}</ul></div><button id="alOk" class="al-ok">Entendi, vou segurar os gastos</button>`;
-  p.classList.add('on');document.body.classList.add('al-aberto');
+  p.classList.add('on');document.body.classList.remove('vin-sai');document.body.classList.add('al-aberto');
   try{if(navigator.vibrate&&S.prefs.vibra!==false)navigator.vibrate([220,120,220,120,400])}catch(e){}
   try{SOM.init();SOM.toca('nao')}catch(e){}try{roboReage('nao')}catch(e){}
-  const fechar=()=>{p.classList.remove('on');document.body.classList.remove('al-aberto')};$('#alOk').onclick=fechar;$('#alPopX').onclick=fechar}
+  const fechar=()=>{p.classList.remove('on');const bd=document.body;bd.classList.add('vin-sai');bd.classList.remove('al-aberto');clearTimeout(window._vinT);window._vinT=setTimeout(()=>bd.classList.remove('vin-sai'),4700)};$('#alOk').onclick=fechar;$('#alPopX').onclick=fechar}
 window.NC={get S(){return S},render:()=>render()};
 const SOM={ctx:null,ult:0,
  ok(){return S.prefs.somIA!==false&&(S.prefs.vol??60)>0},
