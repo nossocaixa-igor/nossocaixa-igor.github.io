@@ -269,6 +269,18 @@ button:not(.fab):not(.dica-b):not(.iapop-x):not(.mic):not(.vchip):not(.tela):not
 .nk-off::before{display:none!important}
 .row>select,.row select[style*='width:auto']{flex:none;width:auto!important;min-width:112px;padding-right:34px!important;text-align:left}
 .row>.l{min-width:0}
+/* ===== Proteção de margem ===== */
+html,body{overflow-x:hidden;max-width:100vw}
+img,svg,canvas,video,iframe{max-width:100%}
+.box,.kpi,.assist,.hero,.sheet,.row,.toolbar,.f2,.field{min-width:0;max-width:100%}
+.row{flex-wrap:wrap;row-gap:8px}
+.row>*{min-width:0}
+.row>.l{flex:1 1 55%}
+.row>div:not(.l){flex:0 1 auto;max-width:100%;margin-left:auto}
+.num{white-space:nowrap;max-width:100%}
+.row .num{font-size:clamp(13.5px,4vw,17px)}
+.l b,.l span,h1,h2,h3,b{overflow-wrap:anywhere}
+.f2>*{min-width:0}
 .fab{position:fixed;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;width:58px;height:58px;border-radius:50%!important;padding:0!important;z-index:7;display:grid;place-items:center}.fab.hide{display:none}.fab.dormindo{opacity:.38;filter:grayscale(.85) saturate(.4);transform:scale(.92)}.fab.dormindo .orbf{animation:none;box-shadow:none}.fab.arrastando{opacity:1;transform:scale(1.08)}.orbf{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#e0f2fe,#38bdf8 40%,#1d4ed8 75%);box-shadow:0 0 18px #38bdf8;animation:pulso 2.4s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){.assist .orb{animation:none}.orbf,.iapop-in{animation:none}
 button,.btn{transition:none}}
@@ -694,6 +706,12 @@ function perguntarFixa(lid,d,ym,ativas,sugeridas){const ord=ativas.slice().sort(
 async function excluirFixa(c){if(!await confirma(`Excluir a despesa fixa "${c.nome}"? Os pagamentos e comprovantes já lançados continuam no histórico.`))return;const cur=mesRef();const{id,venc:_v,paga:_p,...cd}=S.contas.find(x=>x.id===c.id)||c;try{await db.collection('contas').doc(c.id).set({...cd,excluida:true,excluidaEm:Date.now(),fim:(cd.pagas||{})[cur]?cur:addM(cur,-1)});const k=cd.chave||norm(cd.nome);if(k){const ig=[...new Set([...(S.config.ignoradas||[]),k])];await db.doc('app/config').set({...S.config,ignoradas:ig})}closeSheet();toast('Despesa fixa excluída. O histórico foi mantido.')}catch(e){toast(errMsg(e))}}
 
 window.vincularFixa=vincularFixa;
+/* auto-correção de margem: encolhe o que passar da borda */
+function autoMargem(){const sec=document.querySelector('section.tab:not(.hide)')||document;const W=document.documentElement.clientWidth;
+  sec.querySelectorAll('.num,.big,b,h1,h2,h3,button,.chip,.tag').forEach(el=>{if(!el.offsetParent)return;const r=el.getBoundingClientRect();const box=el.closest('.box,.kpi,.hero,.assist,.sheet')||document.body;const br=box.getBoundingClientRect();const lim=Math.min(W-4,br.right-6);if(r.right>lim+0.5||r.left<Math.max(0,br.left)-0.5){let fs=parseFloat(getComputedStyle(el).fontSize),g=0;while((el.getBoundingClientRect().right>lim+0.5)&&fs>10&&g++<12){fs-=1;el.style.fontSize=fs+'px'}if(el.getBoundingClientRect().right>lim+0.5){el.style.whiteSpace='normal';el.style.overflowWrap='anywhere'}}})}
+let _amT;function agendaMargem(){clearTimeout(_amT);_amT=setTimeout(()=>{try{autoMargem()}catch(e){}},120)}
+addEventListener('resize',agendaMargem);addEventListener('hashchange',()=>setTimeout(agendaMargem,200));
+
 const TELAS=[['inicio','Início'],['comprovantes','Lançamentos'],['cartoes','Cartões'],['contracheque','Holerite'],['contas','Fixas'],['ajustes','Ajustes']];
 const BLOCO_SEL='.box,.kpi,.assist,.hero';
 const DINAM=[['#cardList','cartoes:cards','Cartões cadastrados','c'],['#holOut','contracheque:conf','Conferência do contracheque','b'],['#compMeses','comprovantes:hist','Histórico de comprovantes','b']];
@@ -724,7 +742,7 @@ function montaDica(p){if(p.dataset.dica==='1'&&p.firstElementChild&&p.firstEleme
   if(p.parentElement&&p.parentElement.matches('section.tab')){const t=p.previousElementSibling;const h=t&&(t.matches('h1,h2')?t:t.querySelector&&t.querySelector('h1,h2'));if(h&&!h.querySelector('.dica-p')){h.classList.add('com-dica');h.appendChild(p)}}}
 function varreDicas(raiz){(raiz||document).querySelectorAll(DICA_SEL).forEach(p=>{if(ehDica(p))montaDica(p)})}
 document.addEventListener('click',e=>{const b=e.target.closest('.dica-b');document.querySelectorAll('.dica-p.aberta').forEach(x=>{if(!b||x!==b.parentElement){x.classList.remove('aberta');const bb=x.querySelector('.dica-b');if(bb)bb.setAttribute('aria-expanded','false')}});if(b){e.preventDefault();e.stopPropagation();const p=b.parentElement;const ab=p.classList.toggle('aberta');b.setAttribute('aria-expanded',String(ab));if(ab){const t=p.querySelector('.dica-t'),r=b.getBoundingClientRect(),w=Math.min(300,innerWidth-24);t.style.width=w+'px';t.style.left=Math.max(12,Math.min(r.left-8,innerWidth-w-12))+'px';const h=t.offsetHeight;t.style.top=(r.bottom+8+h>innerHeight-90?Math.max(12,r.top-8-h):r.bottom+8)+'px'}}},true);
-new MutationObserver(ms=>{let tem=false;for(const m of ms){if(m.addedNodes.length||m.type==='characterData')tem=true}if(tem){clearTimeout(window._dicaT);window._dicaT=setTimeout(()=>{varreDicas();vigiaVis();try{aplicaTelasNeon()}catch(e){}},40)}}).observe(document.body,{childList:true,subtree:true});
+new MutationObserver(ms=>{let tem=false;for(const m of ms){if(m.addedNodes.length||m.type==='characterData')tem=true}if(tem){clearTimeout(window._dicaT);window._dicaT=setTimeout(()=>{varreDicas();vigiaVis();try{aplicaTelasNeon()}catch(e){}agendaMargem()},40)}}).observe(document.body,{childList:true,subtree:true});
 varreDicas();vigiaVis();
 
 function conselhoNeg(r){const cur=mesRef(),falta=-r.livre;const ent=pagadores().map(p=>({p,d:proxPag(p)})).filter(x=>x.d).sort((a,b)=>a.d.localeCompare(b.d))[0];
