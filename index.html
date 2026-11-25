@@ -246,6 +246,11 @@ h1.com-dica,h2.com-dica{display:inline-flex;align-items:center;gap:10px}.com-dic
 body{background-attachment:scroll!important}
 .box:not(.vis)::before,.kpi:not(.vis)::before,.assist:not(.vis)::before,.hero:not(.vis)::before{animation-play-state:paused!important}
 .dica-p.quem{margin:0 4px 0 0;align-self:center}
+/* ===== Botões: um padrão só ===== */
+button:not(.fab):not(.dica-b):not(.iapop-x):not(.mic):not(.vchip),.btn{min-height:40px!important;padding:0 16px!important;font:600 14.5px/1.1 Inter,sans-serif!important;border-radius:10px!important;letter-spacing:.01em}
+.seg button{min-height:40px!important;border-radius:9px!important}
+.al-ok{background:linear-gradient(180deg,#1d3f94 0%,#0f2a6b 55%,#0a1f52 100%)!important;border-color:#1e3a8a!important}
+.toolbar>button,.toolbar>.btn,.toolbar>label.btn{flex:0 0 auto}
 .fab{position:fixed;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;width:58px;height:58px;border-radius:50%!important;padding:0!important;z-index:7;display:grid;place-items:center}.fab.hide{display:none}.fab.dormindo{opacity:.38;filter:grayscale(.85) saturate(.4);transform:scale(.92)}.fab.dormindo .orbf{animation:none;box-shadow:none}.fab.arrastando{opacity:1;transform:scale(1.08)}.orbf{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#e0f2fe,#38bdf8 40%,#1d4ed8 75%);box-shadow:0 0 18px #38bdf8;animation:pulso 2.4s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){.assist .orb{animation:none}.orbf,.iapop-in{animation:none}
 button,.btn{transition:none}}
