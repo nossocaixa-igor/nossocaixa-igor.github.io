@@ -282,7 +282,7 @@ img,svg,canvas,video,iframe{max-width:100%}
 .l b,.l span,h1,h2,h3,b{overflow-wrap:anywhere}
 .f2>*{min-width:0}
 #toast{overflow-wrap:anywhere;word-break:break-word;max-width:min(92vw,520px)}
-.ksub{display:flex;flex-direction:column;gap:2px;margin-top:6px;font-size:11.5px;color:var(--mut)}.ksub span{display:flex;align-items:center;gap:6px;white-space:nowrap}.ksub b{font-size:12px!important;color:var(--ink);margin-left:auto}
+.ksub{display:flex;flex-direction:column;gap:6px;margin-top:8px;font-size:11px;color:var(--mut);min-width:0}.ksub span{display:grid;grid-template-columns:10px 1fr;column-gap:6px;row-gap:1px;align-items:center;min-width:0}.ksub b{grid-column:2;font-size:clamp(11px,3.3vw,13px)!important;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex:none}.dot.pg{background:#38bdf8}.dot.gs{background:#f59e0b}
 .pill.npg{color:#7dd3fc;border-color:rgba(56,189,248,.5);background:rgba(56,189,248,.1)}.pill.ngs{color:#fcd34d;border-color:rgba(245,158,11,.5);background:rgba(245,158,11,.1)}
 .fab{position:fixed;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;width:58px;height:58px;border-radius:50%!important;padding:0!important;z-index:7;display:grid;place-items:center}.fab.hide{display:none}.fab.dormindo{opacity:.38;filter:grayscale(.85) saturate(.4);transform:scale(.92)}.fab.dormindo .orbf{animation:none;box-shadow:none}.fab.arrastando{opacity:1;transform:scale(1.08)}.orbf{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#e0f2fe,#38bdf8 40%,#1d4ed8 75%);box-shadow:0 0 18px #38bdf8;animation:pulso 2.4s ease-in-out infinite}
@@ -714,7 +714,7 @@ async function excluirFixa(c){if(!await confirma(`Excluir a despesa fixa "${c.no
 window.vincularFixa=vincularFixa;
 /* auto-correção de margem: encolhe o que passar da borda */
 function autoMargem(){const sec=document.querySelector('section.tab:not(.hide)')||document;const W=document.documentElement.clientWidth;
-  sec.querySelectorAll('.num,.big,b,h1,h2,h3,button,.chip,.tag').forEach(el=>{if(!el.offsetParent)return;const r=el.getBoundingClientRect();const box=el.closest('.box,.kpi,.hero,.assist,.sheet')||document.body;const br=box.getBoundingClientRect();const lim=Math.min(W-4,br.right-6);if(r.right>lim+0.5||r.left<Math.max(0,br.left)-0.5){let fs=parseFloat(getComputedStyle(el).fontSize),g=0;while((el.getBoundingClientRect().right>lim+0.5)&&fs>10&&g++<12){fs-=1;el.style.fontSize=fs+'px'}if(el.getBoundingClientRect().right>lim+0.5){el.style.whiteSpace='normal';el.style.overflowWrap='anywhere'}}})}
+  sec.querySelectorAll('.num,.big,b,h1,h2,h3,button,.chip,.tag,.ksub span').forEach(el=>{if(!el.offsetParent)return;const r=el.getBoundingClientRect();const box=el.closest('.box,.kpi,.hero,.assist,.sheet')||document.body;const br=box.getBoundingClientRect();const lim=Math.min(W-4,br.right-6);if(r.right>lim+0.5||r.left<Math.max(0,br.left)-0.5){let fs=parseFloat(getComputedStyle(el).fontSize),g=0;while((el.getBoundingClientRect().right>lim+0.5)&&fs>10&&g++<12){fs-=1;el.style.fontSize=fs+'px'}if(el.getBoundingClientRect().right>lim+0.5){el.style.whiteSpace='normal';el.style.overflowWrap='anywhere'}}})}
 let _amT;function agendaMargem(){clearTimeout(_amT);_amT=setTimeout(()=>{try{autoMargem()}catch(e){}},120)}
 addEventListener('resize',agendaMargem);addEventListener('hashchange',()=>setTimeout(agendaMargem,200));
 
