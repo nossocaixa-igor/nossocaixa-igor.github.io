@@ -212,7 +212,7 @@ nav.bar a.on{color:#fff}nav.bar a.on svg{background:linear-gradient(180deg,#2563
 .pgrow{padding:10px 0;border-bottom:1px solid var(--line)}.pgrow:last-child{border-bottom:0}
 .hgasto{padding:4px 0 14px;border-bottom:1px solid var(--line)}.hgasto:last-child{border-bottom:0}
 .hero.hero-neg .field{background:radial-gradient(120% 140% at 100% 0%,#7f1d1d,#3b0a0a 60%,#1a0505)!important;cursor:pointer;animation:heroPulso 2.6s ease-in-out infinite}
-.hero.hero-neg #hLivre{color:#fecaca!important;text-shadow:0 0 18px rgba(239,68,68,.6)}
+.hero.hero-neg #hLivre{color:#fecaca!important;text-shadow:0 0 14px rgba(239,68,68,.45);font-size:clamp(24px,6.4vw,32px)!important;line-height:1.15;margin:4px 0 2px}.hero .falt{font-size:15px;font-weight:600;letter-spacing:.3px;opacity:.85;margin-right:8px;text-transform:uppercase;vertical-align:middle}
 .hero.hero-neg .hero-t{color:#fecaca;letter-spacing:.4px}
 .hero.hero-baixo .field{background:radial-gradient(120% 140% at 100% 0%,#92400e,#451a03 65%)!important}
 .hero-msg{margin-top:6px;font-size:14px;line-height:1.4;opacity:.95}
@@ -471,7 +471,7 @@ function rInicio(){
   $('#mesLabel').textContent=pagadores().length?`Mês de ${mesNome(cur)} · ciclo de ${dataBR(cicloIni(cur))} a ${dataBR(cicloFim(cur))}, pelas datas de pagamento`:'Resumo de '+mesNome(cur)+' · atualizado em tempo real para vocês dois';
   {const res=r.e*(S.config.reserva||10)/100;const est=r.livre<0?'neg':(r.livre<res||r.livre<r.pend*.1)?'baixo':'ok';const hero=$('.hero');hero.classList.toggle('hero-neg',est==='neg');hero.classList.toggle('hero-baixo',est==='baixo');document.body.classList.toggle('modo-alerta',est==='neg');
   $('#hTit').innerHTML=est==='neg'?'<b>⛔ GASTOS PROIBIDOS ESTE MÊS</b>':est==='baixo'?'<b>Atenção: pouco espaço para gastar</b>':'Livre para gastar este mês';
-  $('#hLivre').textContent=est==='neg'?'Faltam '+brl(-r.livre):brl(r.livre);$('#hLivre').style.color='';
+  $('#hLivre').innerHTML=est==='neg'?'<span class="falt">faltam</span>'+brl(-r.livre):brl(r.livre);$('#hLivre').style.color='';
   const m=$('#hMsg');m.classList.toggle('hide',est==='ok');m.innerHTML=est==='neg'?'As contas do mês passam do que entrou. Nenhum gasto que não seja essencial até a próxima entrada. <u>Toque para ver o conselho</u>':est==='baixo'?`Sobram só ${brl(r.livre)}. Segure gastos extras até as contas fecharem.`:'';
   if(est==='neg')setTimeout(()=>alertaVermelho(r),900)}
   $('.hero .field').onclick=()=>{const r2=resumoMes(mesRef());if(r2.livre<0)alertaVermelho(r2,true)};$('#hSub').textContent=`Entradas ${brl(r.e)} − saídas ${brl(r.s)} − contas pendentes ${brl(r.pend)}`;
