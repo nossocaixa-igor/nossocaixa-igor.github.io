@@ -354,7 +354,7 @@ function compNatural(data){let M=ymOf(data),g=0;while(g++<4&&data>=cicloIni(addM
 const antec=()=>{const v=S.config.antecedencia;return v==null||v===''?7:Math.max(0,Math.min(20,num(v)))};
 function addDias(d,n){const x=new Date(d+'T12:00');x.setDate(x.getDate()+n);return iso(x)}
 function compConta(data){const i=S.config.inicioControle;let M=ymOf(data||hoje());if(i&&M<i)M=i;return M}
-function refL(l){const dt=(l&&l.data)||hoje(),i=S.config.inicioControle;if(l&&l.tipo==='saida'&&(l.contaId||l.dividaTipo))return compConta(dt);let M=compNatural(dt);if(i&&M<i&&(!l||l.tipo!=='entrada'))M=i;return M}
+function refL(l){const dt=(l&&l.data)||hoje(),i=S.config.inicioControle;if(l&&l.tipo==='saida'&&(l.contaId||l.dividaTipo))return compConta(dt);let M=compNatural(dt);if(i&&M<i&&(!l||l.tipo!=='entrada'||ymOf(dt)>=addM(i,-1)))M=i;return M}
 function mesRef(){const i=S.config.inicioControle,M=compNatural(hoje());return i&&M<i?i:M}
 function diasCiclo(M){const a=new Date(cicloIni(M)+'T12:00'),b=new Date(cicloFim(M)+'T12:00'),o=[];for(let d=new Date(a);d<=b&&o.length<62;d.setDate(d.getDate()+1))o.push(iso(d));return o}
 function posHoje(dd){const h=hoje();let i=dd.indexOf(h);if(i<0)i=h<dd[0]?0:dd.length-1;return i}
